@@ -25,11 +25,8 @@ class RegisterAPIView(APIView):
             user = User.objects.create_user(**validate_data)
 
             token = generated_token(user)
-
-            user.save()
-
             return Response({'token':token,'data':{'id':user.id,'email':user.email,'username':user.username,
-                                        'is_admin':user.is_superuser},'message':'User Resgitered Successfully'},
+                                        'is_admin':user.is_admin},'message':'User Resgitered Successfully'},
                                         status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -52,17 +49,10 @@ class LoginAPIView(APIView):
                 return Response({'error':'User not Found'}, status= status.HTTP_404_NOT_FOUND)
             
             token = generated_token(user)
-
-            if user.is_superuser == True:
-
-                return Response({'token':token,
+            return Response({'token':token,
                                  'data':{'id':user.id,'email':user.email,'username':user.username,
-                                        'is_admin':user.is_superuser},
+                                        'is_admin':user.is_admin},
                                         'message':"User Logged In"}, status= status.HTTP_200_OK)
-            else:
-                return Response({'token':token,
-                                'data':{'id':user.id,'email':user.email,'username':user.username,
-                                        'is_admin':user.is_superuser}, 
-                                        'message':"User Logged In"}, status= status.HTTP_200_OK)
+            
         except Exception as e:
             return Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
