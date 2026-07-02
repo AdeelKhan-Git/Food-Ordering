@@ -29,6 +29,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Cors Headers
+CORS_ALLOWED_ORIGINS = [
+   
+]
+
 
 # Application definition
 
@@ -130,11 +135,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Enable compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-# Cors Headers
-CORS_ALLOWED_ORIGINS = [
-   
-]
 
 
 # REST Framework 
