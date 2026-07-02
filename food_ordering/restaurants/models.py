@@ -77,7 +77,7 @@ class Deal(models.Model):
         ordering =['-created_at']
     
     def __str__(self):
-        return f"{self.resturant_id.name} ({self.name})"
+        return f"{self.restaurant_id.name} ({self.name})"
 
 class DealItem(models.Model):
     deal_id = models.ForeignKey(Deal,on_delete=models.CASCADE, related_name='deal_item')
