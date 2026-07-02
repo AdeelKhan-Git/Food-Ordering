@@ -5,7 +5,8 @@ from user.models import User
 class Category(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True, unique= True)
     slug = models.SlugField(max_length=100, null=True, blank=True, unique= True )
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_category')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='updated_category')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -27,7 +28,8 @@ class Restaurants(models.Model):
     image = models.ImageField(upload_to="restaurants/",blank=True, null= True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_restaurant')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_restaurant')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -46,7 +48,8 @@ class MenuItem(models.Model):
     image = models.ImageField(upload_to="menu_items/",blank=True,null=True)
     is_available = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_menu')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_menu')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     
@@ -65,7 +68,8 @@ class Deal(models.Model):
     image = models.ImageField(upload_to="deals/", blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_deal')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_deal')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
