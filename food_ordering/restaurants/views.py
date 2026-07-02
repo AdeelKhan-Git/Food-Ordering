@@ -251,3 +251,177 @@ class DeleteMenuItemView(APIView):
             return Response({"error":"Menu Item not Found"},status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+class CreateDealView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    @swagger_auto_schema(
+        request_body=DealSerializer,
+        responses={201: DealSerializer}
+    )
+    def post(self, request):
+        try:
+            serializer = DealSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=request.user)
+
+            return Response({"message": "Deal Created","data": serializer.data},status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetDealView(APIView):
+
+    def get(self, request, deal_id):
+        try:
+            deal = Deal.objects.select_related("restaurant_id", "created_by").prefetch_related("deal_item__menu_item_id").get(id=deal_id)
+
+            serializer = DealSerializer(deal)
+
+            return Response({"data": serializer.data},status=status.HTTP_200_OK)
+
+        except Deal.DoesNotExist:
+            return Response({"error": "Deal not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAllDealView(APIView):
+
+    def get(self, request):
+        try:
+            deals = Deal.objects.select_related("restaurant_id", "created_by").prefetch_related("deal_item__menu_item_id")
+            serializer = DealSerializer(deals, many=True)
+
+            return Response({"data": serializer.data},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateDealView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    @swagger_auto_schema(
+        request_body=DealSerializer,
+        responses={200: DealSerializer}
+    )
+    def patch(self, request, deal_id):
+        try:
+            deal = Deal.objects.get(id=deal_id)
+
+            serializer = DealSerializer(deal,data=request.data,partial=True)
+
+            serializer.is_valid(raise_exception=True)
+            serializer.save(updated_by =request.user)
+
+            return Response({"message": "Deal Updated","data": serializer.data},status=status.HTTP_200_OK)
+
+        except Deal.DoesNotExist:
+            return Response({"error": "Deal not found"},status=status.HTTP_404_NOT_FOUND)
+
+
+class DeleteDealView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def delete(self, request, deal_id):
+        try:
+            deal = Deal.objects.get(id=deal_id)
+            deal.delete()
+
+            return Response({"message": "Deal Deleted"},status=status.HTTP_200_OK)
+
+        except Deal.DoesNotExist:
+            return Response({"error": "Deal not found"},status=status.HTTP_404_NOT_FOUND)
+
+
+#--------Deal Item
+class CreateDealItemView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    @swagger_auto_schema(
+        request_body=DealItemSerializer,
+        responses={201: DealItemSerializer}
+    )
+    def post(self, request):
+        try:
+            serializer = DealItemSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response({"message": "Deal Item Added","data": serializer.data},status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+        
+    
+class GetDealItemView(APIView):
+
+    def get(self, request, item_id):
+        try:
+            item = DealItem.objects.select_related("deal_id","menu_item_id").get(id=item_id)
+
+            serializer = DealItemSerializer(item)
+
+            return Response({"data": serializer.data},status=status.HTTP_200_OK)
+
+        except DealItem.DoesNotExist:
+            return Response({"error": "Deal Item not found"},status=status.HTTP_404_NOT_FOUND)
+
+class GetAllDealItemView(APIView):
+
+    def get(self, request):
+        try:
+            items = DealItem.objects.select_related("deal_id","menu_item_id")
+
+            serializer = DealItemSerializer(items, many=True)
+
+            return Response({"data": serializer.data},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+class UpdateDealItemView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    @swagger_auto_schema(
+        request_body=DealItemSerializer,
+        responses={200: DealItemSerializer}
+    )
+    def patch(self, request, item_id):
+        try:
+            item = DealItem.objects.get(id=item_id)
+
+            serializer = DealItemSerializer(item,data=request.data,partial=True)
+
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response({"message": "Deal Item Updated","data": serializer.data},status=status.HTTP_200_OK)
+
+        except DealItem.DoesNotExist:
+            return Response(
+                {"error": "Deal Item not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+class DeleteDealItemView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def delete(self, request, item_id):
+        try:
+            item = DealItem.objects.get(id=item_id)
+            serializer=DealItemSerializer(item)
+            item.delete()
+
+            return Response(
+                {"message": "Deal Item Deleted","data":serializer.data},
+                status=status.HTTP_200_OK
+            )
+
+        except DealItem.DoesNotExist:
+            return Response(
+                {"error": "Deal Item not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
