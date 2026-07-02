@@ -70,13 +70,6 @@ class DealItemSerializer(serializers.ModelSerializer):
             "quantity": {"required": True},
         }
     
-    def validate(self, attrs):
-        deal = attrs['deal_id']
-        menu_item =attrs['menu_item_id']
-
-        if deal.restaurant_id.id != menu_item.restaurant_id.id:
-            raise serializers.ValidationError({"error":"This menu item does not belong to the selected restaurant."})
-        return attrs
 
 class DealSerializer(serializers.ModelSerializer):
     items = DealItemSerializer(source = 'deal_item',many=True,read_only=True)

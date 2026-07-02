@@ -348,6 +348,13 @@ class CreateDealItemView(APIView):
         try:
             serializer = DealItemSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
+
+            deal = serializer.validated_data['deal_id']
+            menu_item = serializer.validated_data['menu_item_id']
+
+            if deal.restaurant_id.id != menu_item.restaurant_id.id:
+                return Response({"error":"This menu item does not belong to the selected restaurant"}, status=status.HTTP_400_BAD_REQUEST)
+            
             serializer.save()
 
             return Response({"message": "Deal Item Added","data": serializer.data},status=status.HTTP_201_CREATED)
