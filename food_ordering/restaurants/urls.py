@@ -1,5 +1,5 @@
 from django.urls import path
-from restaurants.views import GetCategoryView, CreateCategoryView,GetAllCategoryView,UpdateCategoryView,DeleteCategoryView,CreateRestuarantView,GetAllRestaurantView,UpdateRestaurantView,GetRestaurantView,DeleteRestaurantView,CreateMenuItemView,GetAllMenuItemsView,GetMenuItemView,UpdateMenuItemView,DeleteMenuItemView
+from restaurants.views import GetCategoryView, CreateCategoryView,GetAllCategoryView,UpdateCategoryView,DeleteCategoryView,CreateRestuarantView,GetAllRestaurantView,UpdateRestaurantView,GetRestaurantView,DeleteRestaurantView,CreateMenuItemView,GetAllMenuItemsView,GetMenuItemView,UpdateMenuItemView,DeleteMenuItemView,CreateDealView,GetAllDealView,GetDealView,UpdateDealView,DeleteDealView,CreateDealItemView,GetAllDealItemView,GetDealItemView,DeleteDealItemView,UpdateDealItemView
 
 urlpatterns = [
    #----- category 
@@ -22,5 +22,19 @@ urlpatterns = [
    path('all-menuitem',GetAllMenuItemsView.as_view(), name = 'all-menuitem'),
    path('update-menuitem/<int:menu_id>/',UpdateMenuItemView.as_view(), name = 'update-menuitem'),
    path('delete-menuitem/<int:menu_id>/',DeleteMenuItemView.as_view(), name = 'delete-menuitem'),
+
+   #----------Deal
+   path("create-deal/", CreateDealView.as_view(), name = 'create-deal'),
+   path("deal/<int:deal_id>/", GetDealView.as_view(),name='get-deal'),
+   path("all-deal/", GetAllDealView.as_view(), name = 'all-deal'),
+   path("update-deal/<int:deal_id>/", UpdateDealView.as_view(), name = 'update-deal'),
+   path("delete-deal/<int:deal_id>/", DeleteDealView.as_view(), name = 'delete-deal'),
+
+   #----------Deal Item
+   path("create-deal-item/", CreateDealItemView.as_view(),name='create-dealitem'),
+   path("deal-item/<int:item_id>/", GetDealItemView.as_view(),name='get-dealitem'),
+   path("all-deal-item/", GetAllDealItemView.as_view(), name='getall-dealitem'),
+   path("update-deal-item/<int:item_id>/", UpdateDealItemView.as_view(),name='update-dealitem'),
+   path("delete-deal-item/<int:item_id>/", DeleteDealItemView.as_view(), name='delete-dealitem'),
 
 ]
