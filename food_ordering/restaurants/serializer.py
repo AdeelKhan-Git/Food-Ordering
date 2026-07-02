@@ -9,7 +9,7 @@ class AllRestaurantSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','name','slug','created_by','created_at','updated_at']
+        fields = ['id','name','slug','created_at','updated_at']
         extra_kwargs = {
             'name':{'required':True}
         }
@@ -21,25 +21,29 @@ class AllCategorySerializer(serializers.ModelSerializer):
  
 class MenuItemSerializer(serializers.ModelSerializer):
     category = CategorySerializer(source="category_id", read_only=True)
+    restaurant = CategorySerializer(source="restaurant_id", read_only=True)
     class Meta:
         model = MenuItem
-        fields = ['id','name','description','price','image','is_available','is_featured','created_by','restaurant_id','created_at','updated_at','category']
+        fields = ['id','restaurant_id','category_id','name','description','price','image','is_available','is_featured','restaurant','category','created_at','updated_at',]
         extra_kwargs ={
             'name':{'required':True},
-            'price':{'required':True}
+            'price':{'required':True},
+            'restaurant_id':{'required':True},
+            'category_id':{'required':True}
         }
 
 class AllMenuItemSerializer(serializers.ModelSerializer):
     restaurant = AllRestaurantSerializer(source = "restaurant_id",read_only=True)
+    category = CategorySerializer(source="category_id", read_only=True)
     class Meta:
         model = MenuItem
-        fields = ['id','name','price','image','']
+        fields = ['id','name','price','image','restaurant','category']
 
 class RestaurantSerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only = True)
     class Meta:
         model = Restaurants
-        fields = ['id','name','description','address','image','is_featured','is_active','created_by','created_at','updated_at','menu_items']
+        fields = ['id','name','description','address','image','is_featured','is_active','menu_items','created_at','updated_at',]
         extra_kwargs ={
             'name':{'required':True}
         }
@@ -59,7 +63,7 @@ class DealSerializer(serializers.ModelSerializer):
     items = DealItemSerializer(many=True,read_only=True)
     class Meta:
         model = Deal
-        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','restaurant_id','created_at','updated_at','items']
+        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','restaurant_id','items','created_at','updated_at',]
         extra_kwargs ={
             'name':{'required':True},
             'combo_price':{'required':True}
