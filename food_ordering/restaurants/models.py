@@ -8,7 +8,7 @@ class Category(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_category')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='updated_category')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -31,7 +31,7 @@ class Restaurants(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_restaurant')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_restaurant')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -51,7 +51,7 @@ class MenuItem(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True, related_name='created_menu')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_menu')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
         ordering = ["-created_at"]
@@ -71,7 +71,7 @@ class Deal(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_deal')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='updated_deal')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering =['-created_at']

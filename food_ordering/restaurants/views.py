@@ -401,10 +401,9 @@ class UpdateDealItemView(APIView):
             return Response({"message": "Deal Item Updated","data": serializer.data},status=status.HTTP_200_OK)
 
         except DealItem.DoesNotExist:
-            return Response(
-                {"error": "Deal Item not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Deal Item not found"},status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
         
 class DeleteDealItemView(APIView):
     permission_classes = [permissions.IsAdminUser]
@@ -412,16 +411,27 @@ class DeleteDealItemView(APIView):
     def delete(self, request, item_id):
         try:
             item = DealItem.objects.get(id=item_id)
-            serializer=DealItemSerializer(item)
             item.delete()
 
-            return Response(
-                {"message": "Deal Item Deleted","data":serializer.data},
-                status=status.HTTP_200_OK
-            )
+            return Response({"message": "Deal Item Deleted"},status=status.HTTP_200_OK)
 
         except DealItem.DoesNotExist:
-            return Response(
-                {"error": "Deal Item not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Deal Item not found"},status=status.HTTP_404_NOT_FOUND)
+
+class GlobalSearchView(APIView):
+    def get(self, request):
+
+        query = request.query_params.get('q', '').strip()
+
+        if not query:
+            return Response({'error':'search query is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        restaurants = Restaurants.objects.filter(name__icontains =query).prefetch_related('menu_items__category_id')
+        menuitem = MenuItem.objects.filter(name__icontains=query, is_available=True).select_related('restaurant_id','category_id')
+        category = Category.objects.filter(name__icontains=query).prefetch_related('menu_items__restaurant_id')
+
+        return Response({
+            "restaurants":AllRestaurantSerializer(restaurants, many=True).data,
+            "categories":AllCategorySerializer(category, many=True).data,
+            "menuitems":AllMenuItemSerializer(menuitem, many=True).data,
+        }, status=status.HTTP_200_OK)

@@ -1,5 +1,5 @@
 from django.urls import path
-from restaurants.views import GetCategoryView, CreateCategoryView,GetAllCategoryView,UpdateCategoryView,DeleteCategoryView,CreateRestuarantView,GetAllRestaurantView,UpdateRestaurantView,GetRestaurantView,DeleteRestaurantView,CreateMenuItemView,GetAllMenuItemsView,GetMenuItemView,UpdateMenuItemView,DeleteMenuItemView,CreateDealView,GetAllDealView,GetDealView,UpdateDealView,DeleteDealView,CreateDealItemView,GetAllDealItemView,GetDealItemView,DeleteDealItemView,UpdateDealItemView
+from restaurants.views import GetCategoryView, CreateCategoryView,GetAllCategoryView,UpdateCategoryView,DeleteCategoryView,CreateRestuarantView,GetAllRestaurantView,UpdateRestaurantView,GetRestaurantView,DeleteRestaurantView,CreateMenuItemView,GetAllMenuItemsView,GetMenuItemView,UpdateMenuItemView,DeleteMenuItemView,CreateDealView,GetAllDealView,GetDealView,UpdateDealView,DeleteDealView,CreateDealItemView,GetAllDealItemView,GetDealItemView,DeleteDealItemView,UpdateDealItemView,GlobalSearchView
 
 urlpatterns = [
    #----- category 
@@ -36,5 +36,9 @@ urlpatterns = [
    path("all-deal-item/", GetAllDealItemView.as_view(), name='getall-dealitem'),
    path("update-deal-item/<int:item_id>/", UpdateDealItemView.as_view(),name='update-dealitem'),
    path("delete-deal-item/<int:item_id>/", DeleteDealItemView.as_view(), name='delete-dealitem'),
+
+   #------Global Search by Category, Restaurant and Menu items
+
+   path('search/', GlobalSearchView.as_view(), name='global search')
 
 ]

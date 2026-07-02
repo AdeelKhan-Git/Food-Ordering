@@ -21,7 +21,7 @@ class AllCategorySerializer(serializers.ModelSerializer):
  
 class MenuItemSerializer(serializers.ModelSerializer):
     category = CategorySerializer(source="category_id", read_only=True)
-    restaurant = CategorySerializer(source="restaurant_id", read_only=True)
+    restaurant = AllRestaurantSerializer(source="restaurant_id", read_only=True)
     class Meta:
         model = MenuItem
         fields = ['id','restaurant_id','category_id','name','description','price','image','is_available','is_featured','restaurant','category','created_at','updated_at',]
@@ -34,13 +34,19 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
 class AllMenuItemSerializer(serializers.ModelSerializer):
     restaurant = AllRestaurantSerializer(source = "restaurant_id",read_only=True)
-    category = CategorySerializer(source="category_id", read_only=True)
+    category = AllCategorySerializer(source="category_id", read_only=True)
     class Meta:
         model = MenuItem
         fields = ['id','name','price','image','restaurant','category']
 
+class RestaurantMenuItemSerializer(serializers.ModelSerializer):
+    category = AllCategorySerializer(source="category_id", read_only=True)
+    class Meta:
+        model = MenuItem
+        fields = ['id', 'name', 'price', 'image', 'category']
+
 class RestaurantSerializer(serializers.ModelSerializer):
-    menu_items = MenuItemSerializer(many=True, read_only = True)
+    menu_items = RestaurantMenuItemSerializer(many=True, read_only = True)
     class Meta:
         model = Restaurants
         fields = ['id','name','description','address','image','is_featured','is_active','menu_items','created_at','updated_at',]
@@ -54,7 +60,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
 
 class DealItemSerializer(serializers.ModelSerializer):
-    menu_item = MenuItemSerializer(source = 'menu_item_id', read_only=True)
+    menu_item = AllMenuItemSerializer(source = 'menu_item_id', read_only=True)
     class Meta:
         model = DealItem
         fields = ['id','deal_id','quantity',"menu_item_id",'menu_item',]
@@ -63,7 +69,14 @@ class DealItemSerializer(serializers.ModelSerializer):
             "menu_item_id": {"required": True},
             "quantity": {"required": True},
         }
+    
+    def validate(self, attrs):
+        deal = attrs['deal_id']
+        menu_item =attrs['menu_item_id']
 
+        if deal.restaurant_id.id != menu_item.restaurant_id.id:
+            raise serializers.ValidationError({"error":"This menu item does not belong to the selected restaurant."})
+        return attrs
 
 class DealSerializer(serializers.ModelSerializer):
     items = DealItemSerializer(source = 'deal_item',many=True,read_only=True)
