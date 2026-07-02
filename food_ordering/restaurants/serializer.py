@@ -29,6 +29,12 @@ class MenuItemSerializer(serializers.ModelSerializer):
             'price':{'required':True}
         }
 
+class AllMenuItemSerializer(serializers.ModelSerializer):
+    restaurant = AllRestaurantSerializer(source = "restaurant_id",read_only=True)
+    class Meta:
+        model = MenuItem
+        fields = ['id','name','price','image','']
+
 class RestaurantSerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only = True)
     class Meta:
