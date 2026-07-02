@@ -100,6 +100,10 @@ class DeleteCategoryView(APIView):
 
 class CreateRestuarantView(APIView):
     permission_classes = [permissions.IsAdminUser]
+    @swagger_auto_schema(
+            request_body=RestaurantSerializer,
+            responses={201: RestaurantSerializer}
+    )
 
     def post(self,request):
         try:
@@ -163,3 +167,24 @@ class DeleteRestaurantView(APIView):
             return Response({"error":"Restaurant not Found"},status=status.HTTP_404_NOT_FOUND) 
         except Exception as e:
             return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+        
+#---------------Menu Item----------------------
+
+class CreateMenuItemView(APIView):
+    def post(self, request):
+        try:
+            serialzer = MenuItemSerializer(data = request.data)
+            serialzer.is_valid(raise_exception=True)
+            serialzer.save(created_by = request.user)
+            return Response({"Message":"Menu Item Added","data":serialzer.data}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+class GetAllMenuItemsView(APIView):
+    def get(self, request):
+        try:
+            menu_items = MenuItem.objects.select_related('created_by').only()
+        except Exception as e:
+            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+    
