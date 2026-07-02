@@ -54,17 +54,24 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
 
 class DealItemSerializer(serializers.ModelSerializer):
-    menu_item = MenuItemSerializer( read_only=True)
+    menu_item = MenuItemSerializer(source = 'menu_item_id', read_only=True)
     class Meta:
         model = DealItem
-        fields = ['id','deal_id','menu_item','quantity']
+        fields = ['id','deal_id','quantity',"menu_item_id",'menu_item',]
+        extra_kwargs = {
+            "deal_id": {"required": True},
+            "menu_item_id": {"required": True},
+            "quantity": {"required": True},
+        }
+
 
 class DealSerializer(serializers.ModelSerializer):
-    items = DealItemSerializer(many=True,read_only=True)
+    items = DealItemSerializer(source = 'deal_item',many=True,read_only=True)
     class Meta:
         model = Deal
-        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','restaurant_id','items','created_at','updated_at',]
+        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','restaurant_id','created_at','updated_at','items']
         extra_kwargs ={
             'name':{'required':True},
-            'combo_price':{'required':True}
+            'combo_price':{'required':True},
+            'restaurant_id': {'required': True},
         }
