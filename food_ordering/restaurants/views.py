@@ -145,6 +145,10 @@ class GetRestaurantView(APIView):
 
 class UpdateRestaurantView(APIView):
     permission_classes = [permissions.IsAdminUser]
+    @swagger_auto_schema(
+            request_body=RestaurantSerializer,
+            responses={201: RestaurantSerializer}
+    )
     def patch(self,request,rest_id):
         try:
             restaurant = Restaurants.objects.select_related('created_by').get(id = rest_id)
