@@ -14,8 +14,8 @@ urlpatterns = [
     #------ orders
 
     path('orders/',UserOrderListView.as_view(), name="orderlist"),
-    path('order/<int:id>',UserOrderDetailView.as_view(), name = 'orderdetail'),
-    path('order/<int:id>/cancel/', CancelOrderView.as_view(), name = 'cancelorder'),
+    path('order/<int:order_id>',UserOrderDetailView.as_view(), name = 'orderdetail'),
+    path('order/<int:order_id>/cancel/', CancelOrderView.as_view(), name = 'cancelorder'),
 
     #--------admin order 
     path('admin/orders',AdminOrderListView.as_view(), name='all-orders'),

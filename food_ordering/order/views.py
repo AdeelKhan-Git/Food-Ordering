@@ -10,7 +10,8 @@ from restaurants.models import MenuItem, Deal
 from order.serializer import CartSerializer, CartItemSerializer,OrderSerializer, CheckoutSerializer
 from django.db.models import Sum, Count, F
 from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 # ─── Cart ────────────────────────
@@ -29,7 +30,17 @@ class CartView(APIView):
 
 class AddToCartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['menu_item_id','deal_id'],
+            properties={
+                'menu_item_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the menu item to add'),
+                'deal_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the deal to add'),
+            }
+        ),
+        responses={200: CartSerializer}
+    )
     def post(self, request):
         try:
             cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -80,7 +91,16 @@ class AddToCartView(APIView):
 
 class UpdateCartItemView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['quantity'],
+            properties={
+                'quantity': openapi.Schema(type=openapi.TYPE_INTEGER, description='New quantity (min 1)'),
+            }
+        ),
+        responses={200: CartItemSerializer}
+    )
     def patch(self, request, item_id):
         try:
             cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
@@ -120,7 +140,22 @@ class RemoveCartItemView(APIView):
 
 class CheckoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['delivery_address', 'payment_method'],
+            properties={
+                'delivery_address': openapi.Schema(type=openapi.TYPE_STRING, description='Delivery address'),
+                'payment_method': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    enum=['cash', 'stripe', 'jazzcash', 'easypaisa'],
+                    description='Payment method'
+                ),
+                'transaction_id': openapi.Schema(type=openapi.TYPE_STRING, description='Required for online payments'),
+            }
+        ),
+        responses={201: openapi.Response('Checkout complete')}
+    )
     def post(self, request):
         serializer = CheckoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -324,6 +359,20 @@ class AdminOrderListView(APIView):
 class AdminUpdateOrderStatusView(APIView):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['status'],
+            properties={
+                'status': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    enum=['pending', 'accepted', 'preparing', 'out_for_delivery', 'delivered', 'cancelled'],
+                    description='New order status'
+                ),
+            }
+        ),
+        responses={200: OrderSerializer}
+    )
     def patch(self, request, order_id):
         try:
             order = Order.objects.get(id=order_id)
