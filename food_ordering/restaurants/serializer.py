@@ -75,7 +75,7 @@ class DealSerializer(serializers.ModelSerializer):
     items = DealItemSerializer(source = 'deal_item',many=True,read_only=True)
     class Meta:
         model = Deal
-        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','restaurant_id','created_at','updated_at','items']
+        fields = ['id','name','description','combo_price','image','is_active','is_featured','created_by','created_at','updated_at','items']
         extra_kwargs ={
             'name':{'required':True},
             'combo_price':{'required':True},
