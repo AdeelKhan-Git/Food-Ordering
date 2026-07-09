@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
 USE_X_FORWARDED_HOST = True
-CSRF_TRUSTED_ORIGINS =['*']
+
 
 
 # Application definition
