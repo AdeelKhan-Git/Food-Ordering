@@ -36,7 +36,7 @@ class CreateCategoryView(APIView):
 class GetCategoryView(APIView):
     def get(self, request, cat_id):
         try:
-            restaurants = Restaurants.objects.filter(menu_items__category_id=cat_id).select_related("created_by").only("id", "name", "created_by", "created_at").distinct()
+            restaurants = Restaurants.objects.filter(menu_items__category_id=cat_id).select_related("created_by").only("id", "name","image" ,"created_by", "created_at").distinct()
             
 
             data = AllRestaurantSerializer(restaurants, many=True).data
