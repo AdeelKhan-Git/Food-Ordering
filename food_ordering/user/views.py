@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework import status,permissions
+from rest_framework import status, serializers
 from user.models import User
 from user.jwt_token import generated_token
 from user.serializer import RegisterSerilizer, LoginSerializer
@@ -17,15 +17,14 @@ class RegisterAPIView(APIView):
     )
     def post(self,request):
         
-            serializer =  RegisterSerilizer(data= request.data)
-            serializer.is_valid(raise_exception=True)
-            validate_data = serializer.validated_data.copy()
-            validate_data.pop('confirm_password')
+        serializer =  RegisterSerilizer(data= request.data)
+        serializer.is_valid(raise_exception=True)
+        validate_data = serializer.validated_data.copy()
+        validate_data.pop('confirm_password')
+        user = User.objects.create_user(**validate_data)
 
-            user = User.objects.create_user(**validate_data)
-
-            token = generated_token(user)
-            return Response({'token':token,'data':{'id':user.id,'email':user.email,'username':user.username,
+        token = generated_token(user)
+        return Response({'token':token,'data':{'id':user.id,'email':user.email,'username':user.username,
                                         'is_admin':user.is_admin},'message':'User Resgitered Successfully'},
                                         status=status.HTTP_201_CREATED)
 
