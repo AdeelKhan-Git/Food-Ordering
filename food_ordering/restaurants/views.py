@@ -20,17 +20,12 @@ class CreateCategoryView(APIView):
     )
     
     def post(self, request):
-        try:
             serializer = CategorySerializer(data =request.data)
             serializer.is_valid(raise_exception=True)
 
             serializer.save(created_by= request.user)
 
             return Response({"message":"Category Added","data":serializer.data}, status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error":str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
 class GetCategoryView(APIView):
@@ -46,10 +41,10 @@ class GetCategoryView(APIView):
                 status=status.HTTP_200_OK
             )
 
-        except Exception as e:
+        except Category.DoesNotExist:
             return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Category with this id not found"},
+                status=status.HTTP_404_NOT_FOUND
             )
 
 class GetAllCategoryView(APIView):
@@ -110,16 +105,12 @@ class CreateRestuarantView(APIView):
     )
 
     def post(self,request):
-        try:
+        
             serializer = RestaurantSerializer(data =request.data)
             serializer.is_valid(raise_exception=True)
 
             serializer.save(created_by =request.user)
             return Response({"message":"Resturant Added","data":serializer.data}, status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
 
 class GetAllRestaurantView(APIView):
     def get(self, request):
@@ -189,15 +180,11 @@ class CreateMenuItemView(APIView):
             responses={201: MenuItemSerializer}
     )
     def post(self, request):
-        try:
+
             serialzer = MenuItemSerializer(data = request.data)
             serialzer.is_valid(raise_exception=True)
             serialzer.save(created_by = request.user)
             return Response({"Message":"Menu Item Added","data":serialzer.data}, status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error":e},status=status.HTTP_400_BAD_REQUEST)
 
 class GetAllMenuItemsView(APIView):
     def get(self, request):
@@ -264,17 +251,13 @@ class CreateDealView(APIView):
         responses={201: DealSerializer}
     )
     def post(self, request):
-        try:
+
             serializer = DealSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=request.user)
 
             return Response({"message": "Deal Created","data": serializer.data},status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
-
+  
 
 class GetDealView(APIView):
 
@@ -349,7 +332,7 @@ class CreateDealItemView(APIView):
         responses={201: DealItemSerializer}
     )
     def post(self, request):
-        try:
+        
             serializer = DealItemSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
@@ -362,10 +345,6 @@ class CreateDealItemView(APIView):
             serializer.save()
 
             return Response({"message": "Deal Item Added","data": serializer.data},status=status.HTTP_201_CREATED)
-        except ValidationError as e:
-            return Response({"error":e.detail},status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error":str(e)},status=status.HTTP_400_BAD_REQUEST)
         
     
 class GetDealItemView(APIView):
