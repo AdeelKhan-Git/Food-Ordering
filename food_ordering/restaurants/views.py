@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status,permissions
 from rest_framework.exceptions import ValidationError
 from restaurants.models import Restaurants, Category,MenuItem,Deal,DealItem
-from restaurants.serializer import CategorySerializer,AllCategorySerializer,AllRestaurantSerializer ,RestaurantSerializer, MenuItemSerializer,AllMenuItemSerializer,DealItemSerializer, DealSerializer
+from restaurants.serializer import CategorySerializer,AllCategorySerializer,AllRestaurantSerializer ,RestaurantSerializer, MenuItemSerializer,AllMenuItemSerializer,DealItemSerializer, DealSerializer,SearchCategorySerializer,SearchMenuItemSerializer,SearchRestaurantSerializer
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 # Create your views here.
 
@@ -409,19 +410,38 @@ class DeleteDealItemView(APIView):
             return Response({"error": "Deal Item not found"},status=status.HTTP_404_NOT_FOUND)
 
 class GlobalSearchView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('q', openapi.IN_QUERY, description='Search query',
+                            type=openapi.TYPE_STRING, required=True),
+        ]
+    )
     def get(self, request):
-
         query = request.query_params.get('q', '').strip()
 
         if not query:
-            return Response({'error':'search query is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        restaurants = Restaurants.objects.filter(name__icontains =query).prefetch_related('menu_items__category_id')
-        menuitem = MenuItem.objects.filter(name__icontains=query, is_available=True).select_related('restaurant_id','category_id')
-        category = Category.objects.filter(name__icontains=query).prefetch_related('menu_items__restaurant_id')
+            return Response({'error': 'Search query is required'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            "restaurants":AllRestaurantSerializer(restaurants, many=True).data,
-            "categories":AllCategorySerializer(category, many=True).data,
-            "menuitems":AllMenuItemSerializer(menuitem, many=True).data,
-        }, status=status.HTTP_200_OK)
+        response_data = {}
+
+        restaurants = Restaurants.objects.filter(
+            name__icontains=query, is_active=True
+        ).prefetch_related('menu_items__category_id')
+        if restaurants.exists():
+            response_data['restaurants'] = SearchRestaurantSerializer(restaurants, many=True).data
+
+        categories = Category.objects.filter(name__icontains=query)
+        if categories.exists():
+            response_data['categories'] = SearchCategorySerializer(categories, many=True).data
+
+        menu_items = MenuItem.objects.filter(
+            name__icontains=query, is_available=True
+        ).select_related('restaurant_id', 'category_id')
+        if menu_items.exists():
+            response_data['menu_items'] = SearchMenuItemSerializer(menu_items, many=True).data
+
+        if not response_data:
+            return Response({'message': 'No results found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"data": response_data}, status=status.HTTP_200_OK)
