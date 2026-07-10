@@ -23,7 +23,7 @@ class RegisterSerilizer(serializers.ModelSerializer):
 
         if password != confirm_password:
 
-            raise serializers.ValidationError({"error":"both passsword should be same. "})
+            raise serializers.ValidationError({"password":"both passsword should be same. "})
         
         return attrs
     

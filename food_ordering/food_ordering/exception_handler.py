@@ -15,7 +15,7 @@ def custom_exception_handler(exc, context):
                 else:
                     formatted_errors[field] = str(messages)
 
-            response.data = formatted_errors
+            response.data = {"error":formatted_errors}
 
         elif isinstance(errors, list):
             response.data = {
