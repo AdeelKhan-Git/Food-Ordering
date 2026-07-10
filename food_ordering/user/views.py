@@ -35,20 +35,18 @@ class LoginAPIView(APIView):
             responses={200: LoginSerializer}
     )
     def post(self,request):
-        try:
-            serializer = LoginSerializer(data =request.data)
-            serializer.is_valid(raise_exception=True)
-            email = serializer.data.get('email')
-            password = serializer.data.get('password')
-            user = authenticate(email=email, password=password)
-            if user is None:
-                return Response({'error':'Invalid Credential'}, status= status.HTTP_404_NOT_FOUND)
+        
+        serializer = LoginSerializer(data =request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.data.get('email')
+        password = serializer.data.get('password')
+        user = authenticate(email=email, password=password)
+        if user is None:
+            return Response({'error':'Invalid Credential'}, status= status.HTTP_404_NOT_FOUND)
             
-            token = generated_token(user)
-            return Response({'token':token,
+        token = generated_token(user)
+        return Response({'token':token,
                                  'data':{'id':user.id,'email':user.email,'username':user.username,
                                         'is_admin':user.is_admin},
                                         'message':"User Logged In"}, status= status.HTTP_200_OK)
             
-        except Exception as e:
-            return Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
