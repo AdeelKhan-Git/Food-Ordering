@@ -139,6 +139,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # REST Framework 
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'food_ordering.exception_handler.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # Enable session-based authentication
