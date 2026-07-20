@@ -37,7 +37,7 @@ ENV/
 *.log
 db.sqlite3-journal
 db.sqlite3
-media/
+# media/
 
 staticfiles/
 
