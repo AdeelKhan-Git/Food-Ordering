@@ -5,3 +5,4 @@ pillow
 django-cors-headers
 python-dotenv
 drf-yasg
+dj-database-url
