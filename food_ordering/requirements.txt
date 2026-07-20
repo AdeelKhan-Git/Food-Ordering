@@ -7,3 +7,5 @@ python-dotenv
 drf-yasg
 whitenoise
 dj-database-url
+psycopg2-binary
+gunicorn
